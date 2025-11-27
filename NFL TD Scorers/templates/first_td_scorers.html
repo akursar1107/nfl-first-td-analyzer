@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First TD Scorers - NFL TD Scorers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🏈 NFL TD Scorers</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('players') }}">Players</a></li>
+                <li><a href="{{ url_for('sync_data') }}">Sync Data</a></li>
+                <li><a href="{{ url_for('first_td_scorers') }}" class="active">First TD Scorers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="header-section">
+            <h2>First Touchdown Scorers</h2>
+            <p class="subtitle">Players who scored the first TD in each game</p>
+        </div>
+
+        {% if player_stats %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Games</h3>
+                <p class="stat-number">{{ first_tds|length }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Unique Players</h3>
+                <p class="stat-number">{{ player_stats|length }}</p>
+            </div>
+            {% if standalone_first_tds %}
+            <div class="stat-card">
+                <h3>Standalone Games</h3>
+                <p class="stat-number">{{ standalone_first_tds|length }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="section-header collapsible" onclick="toggleSection('leaderboard')">
+            <h3>Leaderboard - Most First TDs</h3>
+            <span class="collapse-icon" id="leaderboard-icon">▼</span>
+        </div>
+
+        <div class="leaderboard collapsible-content" id="leaderboard-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Position</th>
+                        <th>Team</th>
+                        <th>First TDs</th>
+                        <th>Latest Odds</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in player_stats %}
+                    <tr>
+                        <td class="rank">{{ loop.index }}</td>
+                        <td class="player-name">{{ stat.player.name }}</td>
+                        <td>{{ stat.player.position or '-' }}</td>
+                        <td>{{ stat.player.team or '-' }}</td>
+                        <td class="total-td"><strong>{{ stat.count }}</strong></td>
+                        <td>
+                            {% if stat.odds_data %}
+                                {% set latest_odds = stat.odds_data|first %}
+                                {% if stat.player.name in latest_odds.odds %}
+                                    <span class="odds-badge">{{ latest_odds.odds[stat.player.name] }}</span>
+                                    <span class="odds-date">{{ latest_odds.game_date.strftime('%m/%d') }}</span>
+                                {% else %}
+                                    <span class="odds-badge odds-na">N/A</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="odds-badge odds-na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('player_detail', player_id=stat.player.id) }}" class="btn btn-sm btn-primary">View Player</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if standalone_first_tds %}
+        <div class="section-header collapsible" style="margin-top: 2rem;" onclick="toggleSection('standalone-games')">
+            <h3>Standalone Games - All First Touchdowns</h3>
+            <span class="collapse-icon" id="standalone-games-icon">▼</span>
+        </div>
+
+        <div class="leaderboard collapsible-content" id="standalone-games-content">
+            <table id="standalone-games-table">
+                <thead>
+                    <tr>
+                        <th class="sortable" onclick="sortTable('standalone-games-table', 0, true)" style="cursor: pointer;">
+                            Date <span class="sort-indicator">↕</span>
+                        </th>
+                        <th>Day</th>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Opponent</th>
+                        <th>Quarter</th>
+                        <th>Game Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for td in standalone_first_tds %}
+                    <tr>
+                        <td>{{ td.game_date.strftime('%B %d, %Y') }}</td>
+                        <td>
+                            {% set day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+                            {{ day_names[td.game_date.weekday()] }}
+                        </td>
+                        <td class="player-name">{{ td.player.name }}</td>
+                        <td>{{ td.player.team or '-' }}</td>
+                        <td>{{ td.opponent or '-' }}</td>
+                        <td>
+                            {% if td.quarter %}
+                                {{ td.quarter }}{% if td.quarter == 1 %}st{% elif td.quarter == 2 %}nd{% elif td.quarter == 3 %}rd{% else %}th{% endif %} Quarter
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td><span class="badge badge-{{ td.game_type.lower().replace(' ', '-') }}">{{ td.game_type }}</span></td>
+                        <td>
+                            <a href="{{ url_for('player_detail', player_id=td.player_id) }}" class="btn btn-sm btn-primary">View Player</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <h3>No first TD data yet</h3>
+            <p>Sync data from nflreadpy or add touchdowns manually to see first TD scorers!</p>
+            <a href="{{ url_for('sync_data') }}" class="btn btn-primary">Sync Data</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NFL TD Scorers. Track your favorite players' touchdowns.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const icon = document.getElementById(sectionId + '-icon');
+            
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                icon.textContent = '▼';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.display = 'block';
+                icon.textContent = '▶';
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        function sortTable(tableId, columnIndex, isDate = false) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const header = table.querySelectorAll('thead th')[columnIndex];
+            
+            // Determine sort direction
+            const isAscending = header.classList.contains('sort-asc');
+            
+            // Remove sort classes from all headers
+            table.querySelectorAll('thead th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            
+            // Add appropriate sort class
+            header.classList.add(isAscending ? 'sort-desc' : 'sort-asc');
+            
+            // Sort rows
+            rows.sort((a, b) => {
+                let aValue = a.cells[columnIndex].textContent.trim();
+                let bValue = b.cells[columnIndex].textContent.trim();
+                
+                if (isDate) {
+                    // Parse date strings (format: "Month DD, YYYY")
+                    const aDate = new Date(aValue);
+                    const bDate = new Date(bValue);
+                    return isAscending ? bDate - aDate : aDate - bDate;
+                } else {
+                    // String comparison
+                    if (isAscending) {
+                        return bValue.localeCompare(aValue);
+                    } else {
+                        return aValue.localeCompare(bValue);
+                    }
+                }
+            });
+            
+            // Re-append sorted rows
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+</body>
+</html>
+

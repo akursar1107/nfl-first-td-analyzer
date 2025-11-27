@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Player - NFL TD Scorers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🏈 NFL TD Scorers</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('players') }}">Players</a></li>
+                <li><a href="{{ url_for('add_player') }}" class="active">Add Player</a></li>
+                <li><a href="{{ url_for('add_touchdown') }}">Add Touchdown</a></li>
+                <li><a href="{{ url_for('sync_data') }}">Sync Data</a></li>
+                <li><a href="{{ url_for('first_td_scorers') }}">First TD Scorers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>Add New Player</h2>
+            <form method="POST" class="form">
+                <div class="form-group">
+                    <label for="name">Player Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="e.g., Patrick Mahomes">
+                </div>
+                
+                <div class="form-group">
+                    <label for="position">Position</label>
+                    <select id="position" name="position">
+                        <option value="">Select Position</option>
+                        <option value="QB">Quarterback (QB)</option>
+                        <option value="RB">Running Back (RB)</option>
+                        <option value="WR">Wide Receiver (WR)</option>
+                        <option value="TE">Tight End (TE)</option>
+                        <option value="FB">Fullback (FB)</option>
+                        <option value="K">Kicker (K)</option>
+                        <option value="DEF">Defense/Special Teams</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="team">Team</label>
+                    <input type="text" id="team" name="team" placeholder="e.g., Kansas City Chiefs">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Player</button>
+                    <a href="{{ url_for('players') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NFL TD Scorers. Track your favorite players' touchdowns.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

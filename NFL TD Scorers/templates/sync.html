@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync Data - NFL TD Scorers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🏈 NFL TD Scorers</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('players') }}">Players</a></li>
+                <li><a href="{{ url_for('sync_data') }}" class="active">Sync Data</a></li>
+                <li><a href="{{ url_for('first_td_scorers') }}">First TD Scorers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>Sync Data from nflreadpy</h2>
+            <p class="subtitle">Fetch touchdown data directly from NFL play-by-play data</p>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" class="form">
+                <div class="form-group">
+                    <label for="seasons">Seasons (comma-separated, e.g., 2023,2024)</label>
+                    <input type="text" id="seasons" name="seasons" 
+                           placeholder="Leave empty for current and previous year" 
+                           value="{{ current_year - 1 }},{{ current_year }}">
+                    <small>Enter years separated by commas. Leave empty to use default ({{ current_year - 1 }}, {{ current_year }}).</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="update_existing" name="update_existing">
+                        Update existing touchdowns
+                    </label>
+                    <small>If checked, will update existing records. Otherwise, skips duplicates.</small>
+                </div>
+                
+                <div class="info-box">
+                    <h4>What this does:</h4>
+                    <ul>
+                        <li>Fetches play-by-play data from nflreadpy</li>
+                        <li>Extracts all touchdown plays</li>
+                        <li>Creates players automatically if they don't exist</li>
+                        <li>Adds touchdown records with game details</li>
+                        <li>Detects game type (Regular Season, Playoffs, Super Bowl)</li>
+                    </ul>
+                    <p><strong>Note:</strong> This may take a few minutes depending on the number of seasons selected.</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Sync Data</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NFL TD Scorers. Track your favorite players' touchdowns.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

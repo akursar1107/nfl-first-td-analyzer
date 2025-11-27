@@ -1,0 +1,4 @@
+polars
+pytz
+nflreadpy
+requests

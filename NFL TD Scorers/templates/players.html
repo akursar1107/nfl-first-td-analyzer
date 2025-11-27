@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Players - NFL TD Scorers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🏈 NFL TD Scorers</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('players') }}" class="active">Players</a></li>
+                <li><a href="{{ url_for('sync_data') }}">Sync Data</a></li>
+                <li><a href="{{ url_for('first_td_scorers') }}">First TD Scorers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="header-section">
+            <h2>All Players</h2>
+        </div>
+
+        {% if players %}
+        <div class="players-grid">
+            {% for player in players %}
+            <div class="player-card">
+                <div class="player-header">
+                    <h3>{{ player.name }}</h3>
+                    <span class="badge">{{ player.total_tds }} TDs</span>
+                </div>
+                <div class="player-info">
+                    <p><strong>Position:</strong> {{ player.position or 'N/A' }}</p>
+                    <p><strong>Team:</strong> {{ player.team or 'N/A' }}</p>
+                </div>
+                <div class="player-actions">
+                    <a href="{{ url_for('player_detail', player_id=player.id) }}" class="btn btn-sm btn-primary">View Details</a>
+                    <form action="{{ url_for('delete_player', player_id=player.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this player?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No players yet</h3>
+            <p>Sync data from nflreadpy to get started!</p>
+            <a href="{{ url_for('sync_data') }}" class="btn btn-primary">Sync Data</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NFL TD Scorers. Track your favorite players' touchdowns.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

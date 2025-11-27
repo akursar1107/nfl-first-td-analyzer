@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL TD Scorers - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🏈 NFL TD Scorers</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('players') }}">Players</a></li>
+                <li><a href="{{ url_for('sync_data') }}">Sync Data</a></li>
+                <li><a href="{{ url_for('first_td_scorers') }}">First TD Scorers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="header-section">
+            <h2>Touchdown Leaderboard</h2>
+            <p class="subtitle">Track and analyze NFL touchdown scorers</p>
+        </div>
+
+        {% if player_stats %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Players</h3>
+                <p class="stat-number">{{ player_stats|length }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Touchdowns</h3>
+                <p class="stat-number">{{ player_stats|sum(attribute='total_tds') }}</p>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Position</th>
+                        <th>Team</th>
+                        <th>Regular Season</th>
+                        <th>Playoffs</th>
+                        <th>Super Bowl</th>
+                        <th>Total TDs</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in player_stats %}
+                    <tr>
+                        <td class="rank">{{ loop.index }}</td>
+                        <td class="player-name">{{ stat.player.name }}</td>
+                        <td>{{ stat.player.position or '-' }}</td>
+                        <td>{{ stat.player.team or '-' }}</td>
+                        <td>{{ stat.regular_season_tds }}</td>
+                        <td>{{ stat.playoff_tds }}</td>
+                        <td>{{ stat.super_bowl_tds }}</td>
+                        <td class="total-td"><strong>{{ stat.total_tds }}</strong></td>
+                        <td>
+                            <a href="{{ url_for('player_detail', player_id=stat.player.id) }}" class="btn btn-sm btn-primary">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No players yet</h3>
+            <p>Sync data from nflreadpy to get started!</p>
+            <a href="{{ url_for('sync_data') }}" class="btn btn-primary">Sync Data</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NFL TD Scorers. Track your favorite players' touchdowns.</p>
+        </div>
+    </footer>
+</body>
+</html>
+

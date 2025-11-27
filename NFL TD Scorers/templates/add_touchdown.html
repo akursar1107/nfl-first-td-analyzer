@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Touchdown - NFL TD Scorers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">🏈 NFL TD Scorers</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('players') }}">Players</a></li>
+                <li><a href="{{ url_for('add_player') }}">Add Player</a></li>
+                <li><a href="{{ url_for('add_touchdown') }}" class="active">Add Touchdown</a></li>
+                <li><a href="{{ url_for('sync_data') }}">Sync Data</a></li>
+                <li><a href="{{ url_for('first_td_scorers') }}">First TD Scorers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>Add Touchdown</h2>
+            <form method="POST" class="form">
+                <div class="form-group">
+                    <label for="player_id">Player *</label>
+                    <select id="player_id" name="player_id" required>
+                        <option value="">Select Player</option>
+                        {% for player in players %}
+                        <option value="{{ player.id }}" {% if request.args.get('player_id') == player.id|string %}selected{% endif %}>
+                            {{ player.name }} {% if player.team %}({{ player.team }}){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="game_date">Game Date *</label>
+                    <input type="date" id="game_date" name="game_date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="opponent">Opponent</label>
+                    <input type="text" id="opponent" name="opponent" placeholder="e.g., Buffalo Bills">
+                </div>
+                
+                <div class="form-group">
+                    <label for="quarter">Quarter</label>
+                    <select id="quarter" name="quarter">
+                        <option value="">Select Quarter</option>
+                        <option value="1">1st Quarter</option>
+                        <option value="2">2nd Quarter</option>
+                        <option value="3">3rd Quarter</option>
+                        <option value="4">4th Quarter</option>
+                        <option value="OT">Overtime</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="game_type">Game Type</label>
+                    <select id="game_type" name="game_type">
+                        <option value="Regular">Regular Season</option>
+                        <option value="Playoff">Playoff</option>
+                        <option value="Super Bowl">Super Bowl</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Additional notes about this touchdown..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Touchdown</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NFL TD Scorers. Track your favorite players' touchdowns.</p>
+        </div>
+    </footer>
+</body>
+</html>
+
