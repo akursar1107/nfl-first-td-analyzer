@@ -7,3 +7,5 @@ instance/
 venv/
 *.log
 .DS_Store
+NFL TD Scorers/
+getOdds.py

@@ -86,6 +86,11 @@ def view_weekly_schedule(season: int, schedule_df: pl.DataFrame, first_td_map: d
 
     fetch_odds_choice = input("\nDo you want to fetch 1st TD odds for upcoming games in this view? (yes/no): ").strip().lower()
     if fetch_odds_choice in ['yes', 'y']:
+        if not API_KEY:
+            print("\nError: ODDS_API_KEY not found in environment variables.")
+            print("Please set the ODDS_API_KEY environment variable.")
+            return
+
         upcoming_games_df = games_to_show_df.filter(pl.col("gameday_dt") >= now_utc)
         
         if upcoming_games_df.height == 0:
@@ -542,6 +547,10 @@ def view_current_week_odds(schedule_df: pl.DataFrame, first_td_map: dict, roster
     # Fetch odds
     print(f"\nFetching odds for {selected_game['away_team']} @ {selected_game['home_team']}...")
     
+    if not API_KEY:
+        print("\nError: ODDS_API_KEY not found in environment variables.")
+        return
+
     # Fetch mapping
     odds_api_event_ids = get_odds_api_event_ids_for_season(schedule_df, API_KEY)
     
@@ -621,6 +630,10 @@ def view_best_bets_scanner(schedule_df: pl.DataFrame, first_td_map: dict, roster
     funnel_defenses = identify_funnel_defenses(defense_rankings)
 
     # 3. Fetch Odds and Find Bets
+    if not API_KEY:
+        print("\nError: ODDS_API_KEY not found in environment variables.")
+        return
+
     odds_api_event_ids = get_odds_api_event_ids_for_season(schedule_df, API_KEY)
     
     best_bets = []

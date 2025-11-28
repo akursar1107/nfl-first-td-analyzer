@@ -1,7 +1,7 @@
 import os
 
 # API Configuration
-API_KEY = os.environ.get('ODDS_API_KEY')
+API_KEY = os.environ.get('ODDS_API_KEY', '')
 SPORT = "americanfootball_nfl"
 REGION = 'us'
 BASE_URL = "https://api.the-odds-api.com/v4/sports"
